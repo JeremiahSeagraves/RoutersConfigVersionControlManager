@@ -78,16 +78,16 @@ public class App {
                 //System.out.println(x1);
                 listaIpConectadas.add(x1);
                 x1 = s.readLine();
-                
+
             }
             escribirArchivo(listaIpConectadas);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }	    
+    }
 
-	private static byte[] getMacBytes(String macStr) throws IllegalArgumentException {
+    private static byte[] getMacBytes(String macStr) throws IllegalArgumentException {
 		byte[] bytes = new byte[6];
 		String[] hex = macStr.split("(\\:|\\-)");
 		if (hex.length != 6) {
@@ -116,7 +116,7 @@ public class App {
                     String z1="";
                     String z2="";
                     int cont=0;
-                    
+
                     for (int i = 0; i < datos.length; i++) {
                         if (datos[i].contains(".") && cont==0) {
                             z1 = datos[i];
