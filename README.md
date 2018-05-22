@@ -6,7 +6,7 @@ This proyect involves 4 different modules:
 
 2. Obtain configuration files from routers ans switches Cisco within the scope of the network.
 
-3. Mainain the different versions of these.
+3. Maintain the different versions of these.
 
 4. Provide an interface to make reports.
 
