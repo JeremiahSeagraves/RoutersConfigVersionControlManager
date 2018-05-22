@@ -1,9 +1,15 @@
 package routerversioncontroller.models;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
-public class FileManager(){
+public class FileManager{
 
 	ArrayList<String> nameFolders = new ArrayList<>();
 
@@ -26,10 +32,8 @@ public class FileManager(){
             PrintWriter writer = new PrintWriter(
                 new FileWriter("routerversioncontroller/files/Enrutador_3"));
                 writer.print(text);
-                
-            }
-
-            writer.close();
+                 writer.close();
+                 
         } catch (IOException ex) {
             ex.printStackTrace(System.out);
         }

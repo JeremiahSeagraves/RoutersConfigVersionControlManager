@@ -1,1 +1,4 @@
 *.class
+/RoutersConfigVersionControlManager/nbproject/private/
+/build/
+/dist/
