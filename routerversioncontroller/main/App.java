@@ -8,12 +8,15 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.net.SocketException;
 import routerversioncontroller.models.IpFinder;
+import routerversioncontroller.models.VersionController;
 
 public class App {
 
 	public static void main(String args[]){
-		IpFinder ipFinder = new IpFinder();
+		//IpFinder ipFinder = new IpFinder();
+		VersionController versionController = new VersionController();
 
+		/*
 		String ipAddress = ipFinder.getIpAddress();
 		String subnetMask = ipFinder.getSubnetMask();
 		String networkAddress = ipFinder.getNetworkAddress(ipAddress,subnetMask);
@@ -75,6 +78,12 @@ public class App {
 					System.out.println(aVisitedNetwork);
 				}
 		}
-		ipFinder.writeFile(reachableDevices);
+		ipFinder.writeFile(reachableDevices);*/
+
+		try{
+			versionController.connectTelnet("10.10.14.1");
+		}catch(Exception e){
+		 	e.printStackTrace();
+		}
 	}
 }
