@@ -13,42 +13,40 @@ import java.util.List;
 import java.util.ArrayList;
 import java.net.*;
 
-
-public class IpFinder{
-
+public class IpFinder {
 
     public static final String BROADCAST_IP = "255";
     public static final String MULTICAST_SUBNET_1 = "224";
     public static final String MULTICAST_SUBNET_2 = "239";
     public static final String LOCALHOST_SUBNET = "127";
-	private String ipAddress;
-	private InetAddress localHost;
-	private NetworkInterface networkInterface;
-	private int subnetMask;
+    private String ipAddress;
+    private InetAddress localHost;
+    private NetworkInterface networkInterface;
+    private int subnetMask;
 
-	public IpFinder(){
-		try{
-			setIpAddress(Inet4Address.getLocalHost().getHostAddress());
-			setLocalHost(Inet4Address.getLocalHost());
-			setNetworkInterface(NetworkInterface.getByInetAddress(localHost));
-			setSubnetMask(networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength());
-		}catch(UnknownHostException ue){
-			ue.printStackTrace(System.out);
-		}catch(SocketException se){
-			se.printStackTrace(System.out);
-		}
-	}
+    public IpFinder() {
+        try {
+            setIpAddress(Inet4Address.getLocalHost().getHostAddress());
+            setLocalHost(Inet4Address.getLocalHost());
+            setNetworkInterface(NetworkInterface.getByInetAddress(localHost));
+            setSubnetMask(networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength());
+        } catch (UnknownHostException ue) {
+            ue.printStackTrace(System.out);
+        } catch (SocketException se) {
+            se.printStackTrace(System.out);
+        }
+    }
 
-    public IpFinder(String ipAddress, InetAddress localHost, NetworkInterface networkInterface, int subnetMask){
+    public IpFinder(String ipAddress, InetAddress localHost, NetworkInterface networkInterface, int subnetMask) {
         this.ipAddress = ipAddress;
         this.localHost = localHost;
         this.networkInterface = networkInterface;
         this.subnetMask = subnetMask;
     }
 
-	public String getSubnetMask(){
-		String subnetMaskString = "";
-		int subnetMask = this.subnetMask;
+    public String getSubnetMask() {
+        String subnetMaskString = "";
+        int subnetMask = this.subnetMask;
         for (int i = 0; i < 4; i++) {
             if (subnetMask >= 8) {
                 subnetMask -= 8;
@@ -69,11 +67,11 @@ public class IpFinder{
 
         }
         return subnetMaskString;
-	}
+    }
 
-	public String getNetworkAddress(String ipAddress, String subnetMaskString){
-		String networkAddress = "";
-		String[] ipAddrParts = ipAddress.split("\\.");
+    public String getNetworkAddress(String ipAddress, String subnetMaskString) {
+        String networkAddress = "";
+        String[] ipAddrParts = ipAddress.split("\\.");
         String[] maskParts = subnetMaskString.split("\\.");
         for (int i = 0; i < 4; i++) {
             int x = Integer.parseInt(ipAddrParts[i]);
@@ -86,25 +84,25 @@ public class IpFinder{
             }
         }
         return networkAddress;
-	}
+    }
 
-	public void doPing(String networkAddress){
-		Process p;
-        String ipBase = networkAddress.substring(0, networkAddress.length() -1);
+    public void doPing(String networkAddress) {
+        Process p;
+        String ipBase = networkAddress.substring(0, networkAddress.length() - 1);
         for (int i = 1; i < 256; i++) {
             System.out.println(i);
-            try{
-            	p = Runtime.getRuntime().exec("ping " + ipBase + i);
-            }catch(IOException e){
-            	e.printStackTrace(System.out);
+            try {
+                p = Runtime.getRuntime().exec("ping " + ipBase + i);
+            } catch (IOException e) {
+                e.printStackTrace(System.out);
             }
         }
-	}
+    }
 
-	public ArrayList<String> doArp(){
-		ArrayList<String> connectedIps = new ArrayList<>();
-		try {
-			Process p;
+    public ArrayList<String> doArp() {
+        ArrayList<String> connectedIps = new ArrayList<>();
+        try {
+            Process p;
             //p = Runtime.getRuntime().exec("netsh interface ip delete arpcache");
             p = Runtime.getRuntime().exec("arp -a");
             BufferedReader s = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -114,22 +112,22 @@ public class IpFinder{
             String x1 = s.readLine();
             while (x1 != null) {
                 String[] data = x1.split(" ");
-                String deviceIp="";
-                int cont=0;
+                String deviceIp = "";
+                int cont = 0;
                 for (int i = 0; i < data.length; i++) {
-                    if (data[i].contains(".") && cont==0) {
+                    if (data[i].contains(".") && cont == 0) {
                         deviceIp = data[i];
                         cont++;
                     }
                 }
-                String[] ipAddressParts= deviceIp.split("\\.");
+                String[] ipAddressParts = deviceIp.split("\\.");
                 String ipBeginning = ipAddressParts[0];
                 String ipEnd = ipAddressParts[3];
 
-                if(!ipBeginning.equals(MULTICAST_SUBNET_1)&&
-                        !ipBeginning.equals(MULTICAST_SUBNET_2)&&
-                        !ipBeginning.equals(LOCALHOST_SUBNET)&&
-                        !ipEnd.equals(BROADCAST_IP)){
+                if (!ipBeginning.equals(MULTICAST_SUBNET_1)
+                        && !ipBeginning.equals(MULTICAST_SUBNET_2)
+                        && !ipBeginning.equals(LOCALHOST_SUBNET)
+                        && !ipEnd.equals(BROADCAST_IP)) {
                     connectedIps.add(x1);
                 }
 
@@ -140,26 +138,26 @@ public class IpFinder{
             e.printStackTrace();
         }
         return connectedIps;
-	}
+    }
 
-	 public void writeFile(ArrayList<String> listaAGuardar) {
+    public void writeFile(ArrayList<String> listaAGuardar) {
         try {
             PrintWriter escritor = new PrintWriter(
-                new FileWriter("routerversioncontroller/files/IPConectadas.txt"));
+                    new FileWriter("routerversioncontroller/files/IPConectadas.txt"));
             escritor.println("IP\t\t\tMAC Address");
             for (String ipleida : listaAGuardar) {
                 if (ipleida != null) {
                     String[] datos = ipleida.split(" ");
-                    String z1="";
-                    String z2="";
-                    int cont=0;
+                    String z1 = "";
+                    String z2 = "";
+                    int cont = 0;
 
                     for (int i = 0; i < datos.length; i++) {
-                        if (datos[i].contains(".") && cont==0) {
+                        if (datos[i].contains(".") && cont == 0) {
                             z1 = datos[i];
                             cont++;
                         }
-                        if (datos[i].contains("-") && cont==1) {
+                        if (datos[i].contains("-") && cont == 1) {
                             z2 = datos[i];
                         }
                     }
@@ -175,26 +173,24 @@ public class IpFinder{
 
     }
 
-	public void setIpAddress(String ipAddress){
-		this.ipAddress = ipAddress;
-	}
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 
-	public String getIpAddress(){
-		return this.ipAddress;
-	}
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
 
-	public void setLocalHost(InetAddress localHost){
-		this.localHost = localHost;
-	}
+    public void setLocalHost(InetAddress localHost) {
+        this.localHost = localHost;
+    }
 
-	public void setNetworkInterface(NetworkInterface networkInterface){
-		this.networkInterface = networkInterface;
-	}
+    public void setNetworkInterface(NetworkInterface networkInterface) {
+        this.networkInterface = networkInterface;
+    }
 
-	public void setSubnetMask(int subnetMask){
-		this.subnetMask = subnetMask;
-	}
-
-
+    public void setSubnetMask(int subnetMask) {
+        this.subnetMask = subnetMask;
+    }
 
 }

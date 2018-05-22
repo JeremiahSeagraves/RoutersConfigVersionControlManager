@@ -12,11 +12,11 @@ import routerversioncontroller.models.TelnetClient;
 
 public class App {
 
-	public static void main(String args[]){
-		//IpFinder ipFinder = new IpFinder();
-		TelnetClient telnetClient= new TelnetClient();
+    public static void main(String args[]) {
+        //IpFinder ipFinder = new IpFinder();
+        TelnetClient telnetClient = new TelnetClient();
 
-		/*
+        /*
 		String ipAddress = ipFinder.getIpAddress();
 		String subnetMask = ipFinder.getSubnetMask();
 		String networkAddress = ipFinder.getNetworkAddress(ipAddress,subnetMask);
@@ -79,11 +79,10 @@ public class App {
 				}
 		}
 		ipFinder.writeFile(reachableDevices);*/
-
-		try{
-			telnetClient.connectTelnet("10.10.14.1");
-		}catch(Exception e){
-		 	e.printStackTrace();
-		}
-	}
+        try {
+            telnetClient.connectTelnet("10.10.14.1");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
