@@ -12,10 +12,12 @@ This proyect involves 4 different modules:
 
 
 #Instructions
+
 In order to run the app you must be in the folder: "C:\...\RoutersConfigVersionControlManager"
 For compile, execute the command:
 ## javac -cp . routerversioncontroller/main/App.java
+
 For run, execute the command:
-##java -cp . routerversioncontroller.main.App
+## java -cp . routerversioncontroller.main.App
 
 Have fun (:
