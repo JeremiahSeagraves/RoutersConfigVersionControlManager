@@ -1,3 +1,5 @@
+package routerversioncontroller.models;
+
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -113,7 +115,8 @@ public class IpFinder{
 
 	 public void writeFile(ArrayList<String> listaAGuardar) {
         try {
-            PrintWriter escritor = new PrintWriter(new FileWriter("IPConectadas.txt"));
+            PrintWriter escritor = new PrintWriter(
+                new FileWriter("routerversioncontroller/files/IPConectadas.txt"));
             escritor.println("IP\t\t\tMAC Address");
             for (String ipleida : listaAGuardar) {
                 if (ipleida != null) {
@@ -141,7 +144,7 @@ public class IpFinder{
 
             escritor.close();
         } catch (IOException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace(System.out);
         }
 
     }
