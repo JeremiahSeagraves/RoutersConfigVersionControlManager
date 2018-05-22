@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.net.*;
 
 
-public class VersionController{
+public class TelnetClient{
 
 	public void connectTelnet(String ip){
 
@@ -49,7 +49,7 @@ public class VersionController{
 			            //Mostramos el archivo de configuracion
 					bw.write("show startup-config");
 					bw.newLine();
-					bw.write("/32");
+					
 					bw.flush();
 
 					String configuration = bwin.readLine();

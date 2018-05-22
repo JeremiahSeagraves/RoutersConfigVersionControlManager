@@ -8,13 +8,13 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.net.SocketException;
 import routerversioncontroller.models.IpFinder;
-import routerversioncontroller.models.VersionController;
+import routerversioncontroller.models.TelnetClient;
 
 public class App {
 
 	public static void main(String args[]){
 		//IpFinder ipFinder = new IpFinder();
-		VersionController versionController = new VersionController();
+		TelnetClient telnetClient= new TelnetClient();
 
 		/*
 		String ipAddress = ipFinder.getIpAddress();
@@ -81,7 +81,7 @@ public class App {
 		ipFinder.writeFile(reachableDevices);*/
 
 		try{
-			versionController.connectTelnet("10.10.14.1");
+			telnetClient.connectTelnet("10.10.14.1");
 		}catch(Exception e){
 		 	e.printStackTrace();
 		}
