@@ -11,13 +11,16 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.net.*;
 
 
 public class IpFinder{
 
+
+    public static final String BROADCAST_IP = "255";
+    public static final String MULTICAST_SUBNET_1 = "224";
+    public static final String MULTICAST_SUBNET_2 = "239";
+    public static final String LOCALHOST_SUBNET = "127";
 	private String ipAddress;
 	private InetAddress localHost;
 	private NetworkInterface networkInterface;
@@ -35,6 +38,13 @@ public class IpFinder{
 			se.printStackTrace(System.out);
 		}
 	}
+
+    public IpFinder(String ipAddress, InetAddress localHost, NetworkInterface networkInterface, int subnetMask){
+        this.ipAddress = ipAddress;
+        this.localHost = localHost;
+        this.networkInterface = networkInterface;
+        this.subnetMask = subnetMask;
+    }
 
 	public String getSubnetMask(){
 		String subnetMaskString = "";
@@ -103,7 +113,26 @@ public class IpFinder{
             s.readLine();
             String x1 = s.readLine();
             while (x1 != null) {
-                connectedIps.add(x1);
+                String[] data = x1.split(" ");
+                String deviceIp="";
+                int cont=0;
+                for (int i = 0; i < data.length; i++) {
+                    if (data[i].contains(".") && cont==0) {
+                        deviceIp = data[i];
+                        cont++;
+                    }
+                }
+                String[] ipAddressParts= deviceIp.split("\\.");
+                String ipBeginning = ipAddressParts[0];
+                String ipEnd = ipAddressParts[3];
+
+                if(!ipBeginning.equals(MULTICAST_SUBNET_1)&&
+                        !ipBeginning.equals(MULTICAST_SUBNET_2)&&
+                        !ipBeginning.equals(LOCALHOST_SUBNET)&&
+                        !ipEnd.equals(BROADCAST_IP)){
+                    connectedIps.add(x1);
+                }
+
                 x1 = s.readLine();
 
             }
@@ -121,9 +150,6 @@ public class IpFinder{
             for (String ipleida : listaAGuardar) {
                 if (ipleida != null) {
                     String[] datos = ipleida.split(" ");
-                    for (String string : datos) {
-						System.out.println(string);
-					}
                     String z1="";
                     String z2="";
                     int cont=0;
