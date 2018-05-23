@@ -22,6 +22,12 @@ public class VersionController {
     private FileManager fileManager;
     private TelnetClient telnetClient;
     private ArrayList<Device> devices;
+    public static String ROUTE1 = "172.16.76";
+    public static String ROUTE2 = "10.10.14";
+    public static String ROUTE1_ROUTER2 = "192.168.10.253";
+    public static String ROUTE1_ROUTER3 = "192.168.12.2";
+    public static String ROUTE2_ROUTER2 = "192.168.12.1";
+    public static String ROUTE2_ROUTER1 = "192.168.10.254";
 
     public VersionController(ArrayList<Device> devices) {
         fileManager = new FileManager();
@@ -29,154 +35,117 @@ public class VersionController {
         this.devices = devices;
     }
 
-    public void createFiles() {
+    public void initializeFiles() {
 
         fileManager.createFolders(devices);
 
-       
         for (int i = 0; i < devices.size(); i++) {
-            
-            if(devices.get(i).getName().contains("Router")){
-                telnetRouters(devices.get(i));      
-            }else{
-                getConfigurationFileByTelnet(devices.get(i).getIpAddress(), devices.get(i).getName());
+
+            if (devices.get(i).getName().contains("Router")) {
+                initializeRouterFiles(devices.get(i));
+            } else {
+
+                initializeFile(devices.get(i).getIpAddress(), devices.get(i).getName());
+
             }
-           
-                    
-        }
-
-    }
-    
-    private void getConfigurationFileByTelnet(String ip, String nameDevice){
-        telnetClient.connectTelnet(ip);
-                String configurationFile = telnetClient.getConfigurationFile();
-                if(configurationFile !=null){
-                    saveConfigurationFile(nameDevice, configurationFile);
-                }else{
-                    System.out.println("No se pudo obtener el archivo de configuración"
-                            + " del dispositivo: " + nameDevice + 
-                            " con ip: " + ip);
-                }
-    }
-
-    public void saveConfigurationFile(String folder, String info) {
-
-        File directory = new File("configurationFiles/" + folder);
-        File[] files = directory.listFiles();
-
-        int numFiles = files.length;
-
-        if (numFiles == 0) {
-            createCurrentConfigurationFile(folder, info);
-        } else if (numFiles > 0) {
-
-            //Se busca el ultimo archivo de configuración guardado
-            File lastFile = getlastConfigurationFile(files);
-            
-
-            //Al ultimo archivo se le cambia el nombre a uno con versionado
-            String newName ="configurationFiles/" + folder + "/" + folder + "_v" + numFiles + ".txt";
-            File newFile = new File(newName);
-            lastFile.renameTo(newFile);
-
-            //Se crea el nuevo archivo
-            createCurrentConfigurationFile(folder, info);
 
         }
 
     }
-    
-    public void updateConfigurationFiles(){
-        
-        for (int i = 0; i < devices.size(); i++) {
-            
-            if(devices.get(i).getName().contains("Router")){
-                telnetRouters(devices.get(i));      
-            }else{
-                telnetClient.connectTelnet(devices.get(i).getIpAddress());
-                String configurationFile = telnetClient.getConfigurationFile();
-                
-                if(existChanges(configurationFile, devices.get(i))){
-                    System.out.println("Archivo actualizado");
-                   saveConfigurationFile(devices.get(i).getName(), configurationFile);
-                }
-              
-            }
-           
-                    
+
+    private void initializeFile(String ip, String name) {
+        File readFile = telnetClient.getConfigurationFile(ip, name);
+
+        if (readFile == null) {
+            System.out.println("No se pudo obtener el archivo de configuracion "
+                    + "del dispositivo " + name + " - " + ip);
+        } else {
+            fileManager.createConfigurationFile(readFile, name);
         }
-    }
-    
-    private boolean existChanges(String readConfiguration,Device device){
-        
-        File directory = new File("configurationFiles/" + device.getName());
-        File[] files = directory.listFiles();
-        
-        File lastSavedFile = getlastConfigurationFile(files);
-        
-        String configurationFile = readAllBytes(lastSavedFile.getPath());
-        
-        if(!configurationFile.equals(readConfiguration)){
-          return true; 
-        }
-      
-        return false;
-    }
-    
-    private String readAllBytes(String filePath){
-        String content = "";
-        
-        try {
-            content = new String (Files.readAllBytes(Paths.get(filePath)));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        
-        return content;
+
     }
 
-    private void createCurrentConfigurationFile(String folder, String text) {
-        String nameFile = folder + "/" + folder + "_Actual.txt";
-        fileManager.writeFile(nameFile, text);
-    }
-
-    private File getlastConfigurationFile(File[] files) {
-
-        File lastFile= null;
-        
-        for (int j = 0; j < files.length; j++) {
-            if (files[j].getName().contains("Actual")) {
-                 lastFile = files[j];
-                 return lastFile;
-            }
-        }
-        
-        return lastFile;
-    }
-    
-    private void telnetRouters(Device router){
+    private void initializeRouterFiles(Device router) {
         IpFinder ipFinder = new IpFinder();
         String ip = ipFinder.getIpAddress();
-        
+
         String ipRouter = router.getIpAddress();
-        
-        
+
         //Identificamos en que router estamos conectados para saber por medio de 
         //que ips accedemos
-        
-        if(ip.startsWith("172.16.76")){
-            
-            if(ipRouter.startsWith("172.16.76") || ipRouter.startsWith("192.168.12") ){
-                getConfigurationFileByTelnet(ipRouter, router.getName());
+        if (ip.startsWith(ROUTE1)) {
+
+            if (ipRouter.startsWith(ROUTE1) || ipRouter.equals(ROUTE1_ROUTER2)
+                    || ipRouter.equals(ROUTE1_ROUTER3)) {
+                initializeFile(ipRouter, router.getName());
+
             }
-           
-        }else if(ip.startsWith("10.10.14")){
-            
-             if(ipRouter.startsWith("10.10.14") || ipRouter.startsWith("192.168.10") ){
-                 getConfigurationFileByTelnet(ipRouter, router.getName());
+
+        } else if (ip.startsWith(ROUTE2)) {
+
+            if (ipRouter.startsWith(ROUTE2) || ipRouter.equals(ROUTE2_ROUTER2)
+                    || ipRouter.equals(ROUTE2_ROUTER1)) {
+                initializeFile(ipRouter, router.getName());
             }
         }
-        
+
+    }
+
+    public void updateConfigurationFiles() {
+
+        for (int i = 0; i < devices.size(); i++) {
+
+            if (devices.get(i).getName().contains("Router")) {
+                updateRouterFiles(devices.get(i));
+            } else {
+                updateConfigurationFile(devices.get(i).getIpAddress(), devices.get(i).getName());
+            }
+
+        }
+    }
+
+    private void updateConfigurationFile(String ip, String name) {
+        File readFile = telnetClient.getConfigurationFile(ip, name);
+
+        if (readFile == null) {
+            System.out.println("No se pudo obtener el archivo de configuracion "
+                    + "del dispositivo " + name + " - " + ip);
+        } else {
+            File lastFile = fileManager.getlastConfigurationFile(name);
+
+            if (fileManager.areEquals(readFile, lastFile)) {
+                readFile.delete();
+            } else {
+                fileManager.createConfigurationFile(readFile, name);
+
+            }
+        }
+    }
+
+    private void updateRouterFiles(Device router) {
+        IpFinder ipFinder = new IpFinder();
+        String ip = ipFinder.getIpAddress();
+
+        String ipRouter = router.getIpAddress();
+
+        //Identificamos en que router estamos conectados para saber por medio de 
+        //que ips accedemos
+        if (ip.startsWith(ROUTE1)) {
+
+            if (ipRouter.startsWith(ROUTE1) || ipRouter.equals(ROUTE1_ROUTER2)
+                    || ipRouter.equals(ROUTE1_ROUTER3)) {
+                updateConfigurationFile(ipRouter, router.getName());
+
+            }
+
+        } else if (ip.startsWith(ROUTE2)) {
+
+            if (ipRouter.startsWith(ROUTE2) || ipRouter.equals(ROUTE2_ROUTER2)
+                    || ipRouter.equals(ROUTE2_ROUTER1)) {
+                updateConfigurationFile(ipRouter, router.getName());
+            }
+        }
+
     }
 
 }

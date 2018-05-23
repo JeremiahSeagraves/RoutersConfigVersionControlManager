@@ -46,7 +46,7 @@ public class App {
         ipFinder.writeFile(reachableDevices);*/
         
         VersionController versionController = new VersionController(topologyDevices);
-        versionController.createFiles();
+        versionController.initializeFiles();
         
     }
 }

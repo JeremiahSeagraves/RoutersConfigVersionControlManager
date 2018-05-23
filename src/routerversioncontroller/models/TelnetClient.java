@@ -14,14 +14,21 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TelnetClient {
-    
-    
-    private String configurationFile;
 
-    public void connectTelnet(String ip) {
-
+    private FileManager fileManager;
+    
+    public File getConfigurationFile(String ip, String nameDirectory) {
+        boolean written = false;
+        boolean isConfigurationFile = false;
+        
+        fileManager =  new FileManager();
+        File readFile = null;
+        
+        
         try {
             Socket soc = new Socket(ip, 23);
             //create buffered writer
@@ -29,44 +36,57 @@ public class TelnetClient {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(soc.getOutputStream()));
             while (true) {
                 String readFir = bwin.readLine();
+
                 if (readFir == null) {
                     break;
                 }
-                System.out.println(readFir);
-                if (readFir.startsWith("Password")) {
-
-                    //Escribimos la contrasenia
-                    bw.write("cisco");
-                    bw.newLine();
-                    bw.flush();
-
-                    //Entramos modo privilegiado
-                    bw.write("enable");
-                    bw.newLine();
-                    bw.flush();
-
-                    //Escribimos la contrasenia del modo privilegiado
-                    bw.write("class");
-                    bw.newLine();
-                    bw.flush();
-
-                    //Mostramos el archivo de configuracion
-                    bw.write("show startup-config");
-                    bw.newLine();
-                    
-                    configurationFile = bwin.readLine();
-                    
-                    //Escribimos espacio hasta que encontremos la palabra end
-                    while(!configurationFile.contains("end") ){
-                         bw.write("\b");
-                        configurationFile = configurationFile + bwin.readLine();
-                    }
-                    
-
-                    bw.flush();
+                
+                if(readFir.contains("end")){
+                    break;
                 }
 
+                System.out.println(readFir);
+                
+                if(isConfigurationFile){
+                   fileManager.writeConfigurationFile(readFile, readFir);
+                }
+                
+                if (!isConfigurationFile) {
+                    if (readFir.startsWith("Password")) {
+                        if (!written) {
+                            //Escribimos la contrasenia
+                            bw.write("cisco");
+                            bw.newLine();
+                            bw.flush();
+
+                            bw.write("enable");
+                            bw.newLine();
+                            bw.flush();
+
+                            bw.write("class");
+                            bw.newLine();
+                            bw.flush();
+
+                            bw.write("show startup-config");
+                            bw.newLine();
+                            bw.flush();
+
+                            written = true;
+                        }
+
+                    } else if (readFir.contains("show startup-config")) {
+                        isConfigurationFile = true;
+                        readFile =  fileManager.createAuxFile(nameDirectory);
+                    }
+                }else{
+                    bw.write("\b");
+                    bw.newLine();
+                    bw.flush();
+                }
+                
+                
             }
+            bw.close();
         } catch (ConnectException e) {
             System.out.println("Tiempo de conexion excedido");
         } catch (UnknownHostException e) {
@@ -74,12 +94,8 @@ public class TelnetClient {
         } catch (IOException e) {
             System.out.println("Error de lectura");
         }
-
+        
+        return readFile;
     }
 
-    public String getConfigurationFile() {
-        return configurationFile;
-    }
-    
-    
 }
