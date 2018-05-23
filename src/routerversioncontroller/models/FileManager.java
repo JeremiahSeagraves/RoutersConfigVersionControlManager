@@ -41,4 +41,10 @@ public class FileManager {
         }
 
     }
+    
+    public ArrayList<String> getFolders() {
+        ArrayList<String> folders = new ArrayList<>();
+        
+        return folders;
+    }
 }
