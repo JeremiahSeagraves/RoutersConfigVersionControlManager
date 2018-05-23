@@ -1,17 +1,14 @@
 package routerversioncontroller.models;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.ArrayList;
 import java.net.*;
+import java.util.ArrayList;
 
 public class IpFinder {
 
@@ -68,6 +65,30 @@ public class IpFinder {
         }
         return subnetMaskString;
     }
+    
+        public String getSubnetMask(int subnetMask) {
+        String subnetMaskString = "";
+        for (int i = 0; i < 4; i++) {
+            if (subnetMask >= 8) {
+                subnetMask -= 8;
+                subnetMaskString += "255.";
+            } else {
+                int sum = 0;
+                int elevado = 7;
+                for (int j = subnetMask; j > 0; j--) {
+                    sum += Math.pow(2, elevado);
+                    elevado--;
+                }
+                subnetMaskString += sum;
+                for (i = i; i < 3; i++) {
+                    subnetMaskString += ".0";
+                }
+                break;
+            }
+
+        }
+        return subnetMaskString;
+    }
 
     public String getNetworkAddress(String ipAddress, String subnetMaskString) {
         String networkAddress = "";
@@ -88,15 +109,21 @@ public class IpFinder {
 
     public void doPing(String networkAddress) {
         Process p;
-        String ipBase = networkAddress.substring(0, networkAddress.length() - 1);
-        for (int i = 1; i < 256; i++) {
+        String[] ipParts = networkAddress.split("\\.");
+        String ipBase = ipParts[0]+"."+ipParts[1]+"."+ipParts[2]+".";
+        String ipEnd = ipParts[3];
+        int networkBeginning = Integer.parseInt(ipEnd);
+        for (int i = networkBeginning; i < 256; i++) {
             System.out.println(i);
             try {
+                System.out.println("Ping a: "+ipBase+i);
                 p = Runtime.getRuntime().exec("ping " + ipBase + i);
+                p.destroy();
             } catch (IOException e) {
                 e.printStackTrace(System.out);
             }
         }
+        
     }
 
     public ArrayList<String> doArp() {
@@ -120,6 +147,8 @@ public class IpFinder {
                         cont++;
                     }
                 }
+                
+                System.out.println(deviceIp);
                 String[] ipAddressParts = deviceIp.split("\\.");
                 String ipBeginning = ipAddressParts[0];
                 String ipEnd = ipAddressParts[3];
@@ -134,9 +163,12 @@ public class IpFinder {
                 x1 = s.readLine();
 
             }
+            s.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        
         return connectedIps;
     }
 
@@ -171,6 +203,28 @@ public class IpFinder {
             ex.printStackTrace(System.out);
         }
 
+    }
+
+    public ArrayList<Device> getTopologyDevices() {
+        ArrayList<Device> devices =  new ArrayList<>();
+        try {
+            FileReader reader = new FileReader(new File("routerversioncontroller/files/topologia.txt"));
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println("Esta es la línea: "+line);
+                String[] deviceParts = line.split(",");
+                String deviceIP = deviceParts[0];
+                int subnetMask = Integer.parseInt(deviceParts[1]);
+                String deviceName = deviceParts[2];
+                Device aDevice = new Device(deviceIP, subnetMask, deviceName);
+                devices.add(aDevice);
+                bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return devices;
     }
 
     public void setIpAddress(String ipAddress) {
