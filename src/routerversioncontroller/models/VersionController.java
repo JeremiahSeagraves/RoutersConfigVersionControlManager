@@ -6,8 +6,12 @@
 package routerversioncontroller.models;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,27 +21,42 @@ public class VersionController {
 
     private FileManager fileManager;
     private TelnetClient telnetClient;
+    private ArrayList<Device> devices;
 
-    public VersionController() {
+    public VersionController(ArrayList<Device> devices) {
         fileManager = new FileManager();
         telnetClient = new TelnetClient();
+        this.devices = devices;
     }
 
-    public void createFiles(ArrayList<String> devices) {
+    public void createFiles() {
 
-        fileManager.createFolders();
+        fileManager.createFolders(devices);
 
-        IpFinder ipFinder = new IpFinder();
-        String ip = ipFinder.getIpAddress();
-
+       
         for (int i = 0; i < devices.size(); i++) {
-
-            telnetClient.connectTelnet(devices.get(i));
-
-            String configurationFile = telnetClient.getConfigurationFile();
-            saveConfigurationFile(devices.get(i), configurationFile);
+            
+            if(devices.get(i).getName().contains("Router")){
+                telnetRouters(devices.get(i));      
+            }else{
+                getConfigurationFileByTelnet(devices.get(i).getIpAddress(), devices.get(i).getName());
+            }
+           
+                    
         }
 
+    }
+    
+    private void getConfigurationFileByTelnet(String ip, String nameDevice){
+        telnetClient.connectTelnet(ip);
+                String configurationFile = telnetClient.getConfigurationFile();
+                if(configurationFile !=null){
+                    saveConfigurationFile(nameDevice, configurationFile);
+                }else{
+                    System.out.println("No se pudo obtener el archivo de configuración"
+                            + " del dispositivo: " + nameDevice + 
+                            " con ip: " + ip);
+                }
     }
 
     public void saveConfigurationFile(String folder, String info) {
@@ -56,9 +75,9 @@ public class VersionController {
             
 
             //Al ultimo archivo se le cambia el nombre a uno con versionado
-            String newName = folder + "/" + folder + "_v" + numFiles;
+            String newName ="configurationFiles/" + folder + "/" + folder + "_v" + numFiles + ".txt";
             File newFile = new File(newName);
-            lastFile.renameTo(lastFile);
+            lastFile.renameTo(newFile);
 
             //Se crea el nuevo archivo
             createCurrentConfigurationFile(folder, info);
@@ -67,19 +86,57 @@ public class VersionController {
 
     }
     
-    private void updateConfigurationFiles(ArrayList<String> devices){
-         for (int i = 0; i < devices.size(); i++) {
-            telnetClient.connectTelnet(devices.get(i));
-            String configurationFile = telnetClient.getConfigurationFile();
+    public void updateConfigurationFiles(){
+        
+        for (int i = 0; i < devices.size(); i++) {
             
-             //getlastConfigurationFile(files)
-            
-            saveConfigurationFile(devices.get(i), configurationFile);
+            if(devices.get(i).getName().contains("Router")){
+                telnetRouters(devices.get(i));      
+            }else{
+                telnetClient.connectTelnet(devices.get(i).getIpAddress());
+                String configurationFile = telnetClient.getConfigurationFile();
+                
+                if(existChanges(configurationFile, devices.get(i))){
+                    System.out.println("Archivo actualizado");
+                   saveConfigurationFile(devices.get(i).getName(), configurationFile);
+                }
+              
+            }
+           
+                    
         }
+    }
+    
+    private boolean existChanges(String readConfiguration,Device device){
+        
+        File directory = new File("configurationFiles/" + device.getName());
+        File[] files = directory.listFiles();
+        
+        File lastSavedFile = getlastConfigurationFile(files);
+        
+        String configurationFile = readAllBytes(lastSavedFile.getPath());
+        
+        if(!configurationFile.equals(readConfiguration)){
+          return true; 
+        }
+      
+        return false;
+    }
+    
+    private String readAllBytes(String filePath){
+        String content = "";
+        
+        try {
+            content = new String (Files.readAllBytes(Paths.get(filePath)));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+        return content;
     }
 
     private void createCurrentConfigurationFile(String folder, String text) {
-        String nameFile = folder + "/" + folder + "_Actual";
+        String nameFile = folder + "/" + folder + "_Actual.txt";
         fileManager.writeFile(nameFile, text);
     }
 
@@ -95,6 +152,31 @@ public class VersionController {
         }
         
         return lastFile;
+    }
+    
+    private void telnetRouters(Device router){
+        IpFinder ipFinder = new IpFinder();
+        String ip = ipFinder.getIpAddress();
+        
+        String ipRouter = router.getIpAddress();
+        
+        
+        //Identificamos en que router estamos conectados para saber por medio de 
+        //que ips accedemos
+        
+        if(ip.startsWith("172.16.76")){
+            
+            if(ipRouter.startsWith("172.16.76") || ipRouter.startsWith("192.168.12") ){
+                getConfigurationFileByTelnet(ipRouter, router.getName());
+            }
+           
+        }else if(ip.startsWith("10.10.14")){
+            
+             if(ipRouter.startsWith("10.10.14") || ipRouter.startsWith("192.168.10") ){
+                 getConfigurationFileByTelnet(ipRouter, router.getName());
+            }
+        }
+        
     }
 
 }

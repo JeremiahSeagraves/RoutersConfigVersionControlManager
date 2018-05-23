@@ -53,13 +53,16 @@ public class TelnetClient {
                     //Mostramos el archivo de configuracion
                     bw.write("show startup-config");
                     bw.newLine();
+                    
+                    configurationFile = bwin.readLine();
+                    
+                    //Escribimos espacio hasta que encontremos la palabra end
+                    while(!configurationFile.contains("end") ){
+                         bw.write("\b");
+                        configurationFile = configurationFile + bwin.readLine();
+                    }
+                    
 
-                    bw.flush();
-
-                  configurationFile = bwin.readLine();
-
-                    // instead might have to explicitly write "\r\n"
-                    // depending platform you're connecting from.
                     bw.flush();
                 }
 

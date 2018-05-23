@@ -8,18 +8,9 @@ import java.util.ArrayList;
 
 public class FileManager {
 
-    ArrayList<String> nameFolders = new ArrayList<>();
 
     public FileManager() {
-        nameFolders.add("Enrutador_1");
-        nameFolders.add("Enrutador_2");
-        nameFolders.add("Enrutador_3");
-        nameFolders.add("sw_1");
-        nameFolders.add("sw_2");
-        nameFolders.add("sw_3");
-        nameFolders.add("sw_4");
-        nameFolders.add("sw_5");
-        nameFolders.add("sw_6");
+        
     }
 
     public void writeFile(String path, String text) {
@@ -37,10 +28,10 @@ public class FileManager {
         }
     }
 
-    public void createFolders() {
+    public void createFolders(ArrayList<Device> devices) {
 
-        for (int i = 0; i < nameFolders.size(); i++) {
-            File file = new File("configurationFiles/" + nameFolders.get(i));
+        for (int i = 0; i < devices.size(); i++) {
+            File file = new File("configurationFiles/" +devices.get(i).getName());
             if (!file.exists()) {
                 file.mkdirs();
                 System.out.println("Creado la carpeta"+ file.getAbsolutePath());

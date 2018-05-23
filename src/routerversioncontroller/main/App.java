@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import routerversioncontroller.models.Device;
 import routerversioncontroller.models.IpFinder;
 import routerversioncontroller.models.TelnetClient;
+import routerversioncontroller.models.VersionController;
 
 public class App {
 
@@ -14,13 +15,13 @@ public class App {
         String ipAddress = ipFinder.getIpAddress();
         String subnetMask = ipFinder.getSubnetMask();
         String networkAddress = ipFinder.getNetworkAddress(ipAddress, subnetMask);
-        ipFinder.doPing(networkAddress);
+        //ipFinder.doPing(networkAddress);
 
-        ArrayList<String> reachableDevices = ipFinder.doArp();
+       // ArrayList<String> reachableDevices = ipFinder.doArp();
         ArrayList<String> visitedNetworks = new ArrayList<>();
         visitedNetworks.add(networkAddress + "\\" + subnetMask);
         ArrayList<Device> topologyDevices = ipFinder.getTopologyDevices();
-
+/*
         for (Device aTopologyDevice : topologyDevices) {
             String subnetMaskString = ipFinder.getSubnetMask(aTopologyDevice.getSubnetMask());
             String aNetworkAddress = ipFinder.getNetworkAddress(aTopologyDevice.getIpAddress(), subnetMaskString);
@@ -42,6 +43,10 @@ public class App {
         for (String aVisitedNetwork : visitedNetworks) {
             System.out.println(aVisitedNetwork);
         }
-        ipFinder.writeFile(reachableDevices);
+        ipFinder.writeFile(reachableDevices);*/
+        
+        VersionController versionController = new VersionController(topologyDevices);
+        versionController.createFiles();
+        
     }
 }
