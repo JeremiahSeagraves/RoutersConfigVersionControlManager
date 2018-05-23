@@ -5,8 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FileManager {
 
@@ -24,13 +22,15 @@ public class FileManager {
         nameFolders.add("sw_6");
     }
 
-    public void writeFile(String text) {
+    public void writeFile(String path, String text) {
 
         try {
+            String fullPath = "configurationFiles/" + path;
             PrintWriter writer = new PrintWriter(
-                    new FileWriter("routerversioncontroller/files/Enrutador_3"));
+                    new FileWriter(fullPath));
             writer.print(text);
             writer.close();
+            System.out.println("Creado el archivo " + fullPath );
 
         } catch (IOException ex) {
             ex.printStackTrace(System.out);
@@ -40,9 +40,12 @@ public class FileManager {
     public void createFolders() {
 
         for (int i = 0; i < nameFolders.size(); i++) {
-            File file = new File("routerversioncontroller/files/" + nameFolders.get(i));
+            File file = new File("configurationFiles/" + nameFolders.get(i));
             if (!file.exists()) {
                 file.mkdirs();
+                System.out.println("Creado la carpeta"+ file.getAbsolutePath());
+            }else{
+                System.out.println("La carpeta " + file.getAbsolutePath() + " ya existe");
             }
         }
 

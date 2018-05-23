@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.net.*;
 
 public class TelnetClient {
+    
+    
+    private String configurationFile;
 
     public void connectTelnet(String ip) {
 
@@ -53,9 +56,7 @@ public class TelnetClient {
 
                     bw.flush();
 
-                    String configuration = bwin.readLine();
-
-                    System.out.println(configuration);
+                  configurationFile = bwin.readLine();
 
                     // instead might have to explicitly write "\r\n"
                     // depending platform you're connecting from.
@@ -72,4 +73,10 @@ public class TelnetClient {
         }
 
     }
+
+    public String getConfigurationFile() {
+        return configurationFile;
+    }
+    
+    
 }

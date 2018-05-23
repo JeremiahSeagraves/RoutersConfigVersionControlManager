@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.net.SocketException;
+import routerversioncontroller.models.FileManager;
 import routerversioncontroller.models.IpFinder;
 import routerversioncontroller.models.TelnetClient;
 
@@ -80,9 +81,17 @@ public class App {
 		}
 		ipFinder.writeFile(reachableDevices);*/
         try {
-            telnetClient.connectTelnet("10.10.14.1");
+            //telnetClient.connectTelnet("10.10.14.1");
+           
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        FileManager fileManager = new FileManager();
+        
+        fileManager.createFolders();
+        
+        fileManager.writeFile("Enrutador_3/Enrutador_3_v1.txt","Hola mundo maldito, lorep ipsum ");
     }
 }
