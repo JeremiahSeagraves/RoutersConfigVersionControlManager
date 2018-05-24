@@ -2,23 +2,21 @@ package routerversioncontroller.models;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.*;
-import java.io.PrintWriter;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.ArrayList;
 import java.net.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TelnetClient {
 
+    public static String TELNET_PASSWORD = "cisco";
+    public static String PRIVILEGED_MODE = "enable";
+    public static String PRIVILEGED_MODE_PASSWORD = "class";
+    public static String SHOW_STARTUP_CONFIG = "show startup-config";
+    public static String END_STARTUP_CONFIG = "end";
+    public static String PASSWORD= "Password";
+    public static String SPACE= "\b";
     private FileManager fileManager;
     
     public File getConfigurationFile(String ip, String nameDirectory) {
@@ -41,7 +39,7 @@ public class TelnetClient {
                     break;
                 }
                 
-                if(readFir.contains("end")){
+                if(readFir.contains(END_STARTUP_CONFIG)){
                     break;
                 }
 
@@ -52,34 +50,34 @@ public class TelnetClient {
                 }
                 
                 if (!isConfigurationFile) {
-                    if (readFir.startsWith("Password")) {
+                    if (readFir.startsWith(PASSWORD)) {
                         if (!written) {
                             //Escribimos la contrasenia
-                            bw.write("cisco");
+                            bw.write(TELNET_PASSWORD);
                             bw.newLine();
                             bw.flush();
 
-                            bw.write("enable");
+                            bw.write(PRIVILEGED_MODE);
                             bw.newLine();
                             bw.flush();
 
-                            bw.write("class");
+                            bw.write(PRIVILEGED_MODE_PASSWORD);
                             bw.newLine();
                             bw.flush();
 
-                            bw.write("show startup-config");
+                            bw.write(SHOW_STARTUP_CONFIG);
                             bw.newLine();
                             bw.flush();
 
                             written = true;
                         }
 
-                    } else if (readFir.contains("show startup-config")) {
+                    } else if (readFir.contains(SHOW_STARTUP_CONFIG)) {
                         isConfigurationFile = true;
                         readFile =  fileManager.createAuxFile(nameDirectory);
                     }
                 }else{
-                    bw.write("\b");
+                    bw.write(SPACE);
                     bw.newLine();
                     bw.flush();
                 }

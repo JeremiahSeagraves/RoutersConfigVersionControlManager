@@ -7,14 +7,17 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FileManager {
 
     public static String ROOT_DIRECTORY = "configurationFiles/";
+    public static String SUFFIX_CURRENT_FILE = "_Actual";
+    public static String SUFFIX_TEMP_FILE = "_temp";
+    public static String SUFFIX_VERSION_FILE = "_v";
+    public static String  FILE_EXTENSION = ".txt";
+    public static String  SLASH = "/";
+    public static String CURRENT = "Actual";
 
     public FileManager() {
 
@@ -45,14 +48,16 @@ public class FileManager {
     }
 
     private void createCurrentConfigurationFile(File file, String nameDirectory) {
-        String currentFileName = ROOT_DIRECTORY + nameDirectory + "/" + nameDirectory + "_Actual.txt";
+        String currentFileName = ROOT_DIRECTORY + nameDirectory + SLASH + nameDirectory + 
+                SUFFIX_CURRENT_FILE + FILE_EXTENSION;
         File newFile = new File(currentFileName);
         file.renameTo(newFile);
         System.out.println("Creado el archivo " + file.getAbsolutePath());
     }
 
     private void createVersionedConfigurationFile(File file, String nameDirectory, int versionNumber) {
-        String newName = ROOT_DIRECTORY + nameDirectory + "/" + nameDirectory + "_v" + versionNumber + ".txt";
+        String newName = ROOT_DIRECTORY + nameDirectory + SLASH + nameDirectory + SUFFIX_VERSION_FILE + 
+                versionNumber + FILE_EXTENSION;
         File newFile = new File(newName);
         file.renameTo(newFile);
         System.out.println("Creado el archivo " + file.getAbsolutePath());
@@ -80,14 +85,15 @@ public class FileManager {
     }
 
     public File createAuxFile(String nameDirectory) {
-        String nameFile = ROOT_DIRECTORY + nameDirectory + "/" + nameDirectory + "_Aux.txt";
+        String nameFile = ROOT_DIRECTORY + nameDirectory + SLASH + nameDirectory +
+                SUFFIX_TEMP_FILE + FILE_EXTENSION ;
         return new File(nameFile);
     }
 
     public void createFolders(ArrayList<Device> devices) {
 
         for (int i = 0; i < devices.size(); i++) {
-            File file = new File("configurationFiles/" + devices.get(i).getName());
+            File file = new File(ROOT_DIRECTORY + devices.get(i).getName());
             if (!file.exists()) {
                 file.mkdirs();
                 System.out.println("Creado la carpeta" + file.getAbsolutePath());
@@ -103,7 +109,7 @@ public class FileManager {
         File lastFile = null;
 
         for (int j = 0; j < files.length; j++) {
-            if (files[j].getName().contains("Actual")) {
+            if (files[j].getName().contains(CURRENT)) {
                 lastFile = files[j];
                 return lastFile;
             }
@@ -120,7 +126,7 @@ public class FileManager {
         File lastFile = null;
 
         for (int j = 0; j < files.length; j++) {
-            if (files[j].getName().contains("Actual")) {
+            if (files[j].getName().contains(CURRENT)) {
                 lastFile = files[j];
                 return lastFile;
             }
@@ -159,5 +165,12 @@ public class FileManager {
         } 
            
         return equals;
+    }
+    
+    public boolean containsFiles(String nameDirectory){
+        File directory = new File(ROOT_DIRECTORY + nameDirectory);
+        File[] files = directory.listFiles();
+        
+        return files.length > 0 ;
     }
 }

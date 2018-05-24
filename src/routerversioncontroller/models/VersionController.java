@@ -6,12 +6,7 @@
 package routerversioncontroller.models;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -28,6 +23,7 @@ public class VersionController {
     public static String ROUTE1_ROUTER3 = "192.168.12.2";
     public static String ROUTE2_ROUTER2 = "192.168.12.1";
     public static String ROUTE2_ROUTER1 = "192.168.10.254";
+    public static String ROUTER = "Router";
 
     public VersionController(ArrayList<Device> devices) {
         fileManager = new FileManager();
@@ -41,12 +37,12 @@ public class VersionController {
 
         for (int i = 0; i < devices.size(); i++) {
 
-            if (devices.get(i).getName().contains("Router")) {
-                initializeRouterFiles(devices.get(i));
-            } else {
-
-                initializeFile(devices.get(i).getIpAddress(), devices.get(i).getName());
-
+            if (!fileManager.containsFiles(devices.get(i).getName())) {
+                if (devices.get(i).getName().contains(ROUTER)) {
+                    initializeRouterFiles(devices.get(i));
+                } else {
+                    initializeFile(devices.get(i).getIpAddress(), devices.get(i).getName());
+                }
             }
 
         }
@@ -95,7 +91,7 @@ public class VersionController {
 
         for (int i = 0; i < devices.size(); i++) {
 
-            if (devices.get(i).getName().contains("Router")) {
+            if (devices.get(i).getName().contains(ROUTER)) {
                 updateRouterFiles(devices.get(i));
             } else {
                 updateConfigurationFile(devices.get(i).getIpAddress(), devices.get(i).getName());
