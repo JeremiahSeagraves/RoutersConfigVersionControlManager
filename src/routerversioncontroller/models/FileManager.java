@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class FileManager {
 
     public static String ROOT_DIRECTORY = "configurationFiles/";
+    public static String ROOT_DIRECTORY_PDF = "reportesPDF";
     public static String SUFFIX_CURRENT_FILE = "_Actual";
     public static String SUFFIX_TEMP_FILE = "_temp";
     public static String SUFFIX_VERSION_FILE = "_v";
@@ -108,7 +109,9 @@ public class FileManager {
                 System.out.println("La carpeta " + file.getAbsolutePath() + " ya existe");
             }
         }
-
+        
+        File file = new File(ROOT_DIRECTORY_PDF);
+        file.mkdirs();
     }
 
     public File getlastConfigurationFile(File[] files) {
@@ -193,32 +196,41 @@ public class FileManager {
         return folders;
     }
     
-    public void createPDF(String nameFile) throws FileNotFoundException{
+    public void createPDF(String pathFile, String nameFile, int numFiles) throws FileNotFoundException{
         String name[] = nameFile.split(".txt");
+        if (name[0].contains(CURRENT)) {
+            name = nameFile.split("_");
+            name[0] +="_v"+numFiles;
+        }
+        File file = new File(ROOT_DIRECTORY_PDF+ SLASH + name[0] + ".pdf");
         
-        PdfWriter writer = new PdfWriter(name[0]+".pdf");
-        PdfDocument pdf = new PdfDocument(writer);
-        Document document = new Document(pdf);
-        FileReader fileReader1 = null;
-        
-        try { 
-            fileReader1 = new FileReader(nameFile);
-            BufferedReader buffer1 = new BufferedReader(fileReader1);
-            String line1 = buffer1.readLine();
-            document.add(new Paragraph("REPORTE DE CONFIGURACIÓN"));
-            document.add(new Paragraph(" "));
-            while (line1 != null) {
-                document.add(new Paragraph(line1));
-                line1 = buffer1.readLine();
-            }  
-            
-            fileReader1.close();
-            document.close();
-            
-        } catch (FileNotFoundException ex) {
-            System.out.println("No se encontro el archivo para comparar");
-        } catch (IOException ex) {
-            System.out.println("Error de lectura");
+        if (file.exists()) {
+            System.out.println("Ya existe un reporte del archivo de configuración de ese dispositivo");
+        } else {
+            PdfWriter writer = new PdfWriter(ROOT_DIRECTORY_PDF + SLASH + name[0] + ".pdf");
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+            FileReader fileReader1 = null;
+
+            try {
+                fileReader1 = new FileReader(pathFile);
+                BufferedReader buffer1 = new BufferedReader(fileReader1);
+                String line1 = buffer1.readLine();
+                document.add(new Paragraph("REPORTE DE CONFIGURACIÓN"));
+                document.add(new Paragraph(" "));
+                while (line1 != null) {
+                    document.add(new Paragraph(line1));
+                    line1 = buffer1.readLine();
+                }
+
+                fileReader1.close();
+                document.close();
+
+            } catch (FileNotFoundException ex) {
+                System.out.println("No se encontro el archivo para comparar");
+            } catch (IOException ex) {
+                System.out.println("Error de lectura");
+            }
         } 
     }
 }

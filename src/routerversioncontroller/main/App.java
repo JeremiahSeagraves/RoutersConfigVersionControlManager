@@ -99,23 +99,28 @@ public class App {
                     break;
                 case 2:
                     System.out.println("Selecciono la opción 2");
-                    versionController.initializeFiles();
+                    fileManager.createFolders(topologyDevices);
+                    //versionController.initializeFiles();
                     break;
                 case 3:
                     folders = fileManager.getNameFolders(topologyDevices);
                     int indexFolder;
                     int indexFile;
-                    String pathFile="configurationFiles/";
+                    String pathFile=fileManager.ROOT_DIRECTORY;
                     
                     System.out.println("Seleccione un dispositivo: ");
                     for (int i = 0; i < folders.size(); i++) {
                         System.out.println(i + ".- " + folders.get(i));
                     }
                     indexFolder = scanner.nextInt();
-                    File folder = new File("configurationFiles/" + folders.get(indexFolder));
+                    File folder = new File(fileManager.ROOT_DIRECTORY + folders.get(indexFolder));
                     pathFile+=folders.get(indexFolder)+"/";
                     
                     File[] listOfFiles = folder.listFiles();
+                    if (listOfFiles.length <=0){
+                        System.out.println("El dispositivo no cuenta con configuraciones");
+                        break;
+                    }
                     System.out.println("El dispositivo " + folders.get(indexFolder) + " cuenta con las siguientes versiones de configuración: ");
                     for (int i = 0; i < listOfFiles.length; i++) {
                         if (listOfFiles[i].isFile()) {
@@ -129,7 +134,7 @@ public class App {
                     System.out.println("Seleccionaste el archivo " + listOfFiles[indexFile].getName());
                     
                     try {
-                        fileManager.createPDF(pathFile);
+                        fileManager.createPDF(pathFile, listOfFiles[indexFile].getName(), listOfFiles.length);
                     } catch (FileNotFoundException ex) {
                         System.out.println("Error de PDF");
                     }
