@@ -15,7 +15,7 @@ import routerversioncontroller.models.VersionController;
 public class App {
 
     public static void main(String args[]) {
-        /*IpFinder ipFinder = new IpFinder();
+        IpFinder ipFinder = new IpFinder();
         TelnetClient telnetClient = new TelnetClient();
 
         String ipAddress = ipFinder.getIpAddress();
@@ -28,13 +28,8 @@ public class App {
         visitedNetworks.add(networkAddress + "\\" + subnetMask);
         ArrayList<Device> topologyDevices = ipFinder.getTopologyDevices();
         
-        VersionController versionController = new VersionController(topologyDevices);*/
+        VersionController versionController = new VersionController(topologyDevices);
         FileManager fileManager = new FileManager();
-        try {
-        fileManager.createPDF("hello2.pdf");
-        } catch (FileNotFoundException ex) {
-            System.out.println("Error de PDF");
-        } 
 /*  
         for (Device aTopologyDevice : topologyDevices) {
             String subnetMaskString = ipFinder.getSubnetMask(aTopologyDevice.getSubnetMask());
@@ -59,11 +54,10 @@ public class App {
         }
         ipFinder.writeFile(reachableDevices);*/
 
-/*
+
         Scanner scanner = new Scanner(System.in);
         int option;
         ArrayList<String> folders = new ArrayList<>();
-        FileManager fileManager = new FileManager();
 
         System.out.println("Aplicación para el respaldo de las configuraciones.");
         System.out.println("##################################################");
@@ -105,18 +99,22 @@ public class App {
                     break;
                 case 2:
                     System.out.println("Selecciono la opción 2");
-                    versionController.createFiles();
+                    versionController.initializeFiles();
                     break;
                 case 3:
                     folders = fileManager.getNameFolders(topologyDevices);
                     int indexFolder;
                     int indexFile;
+                    String pathFile="configurationFiles/";
+                    
                     System.out.println("Seleccione un dispositivo: ");
                     for (int i = 0; i < folders.size(); i++) {
                         System.out.println(i + ".- " + folders.get(i));
                     }
                     indexFolder = scanner.nextInt();
                     File folder = new File("configurationFiles/" + folders.get(indexFolder));
+                    pathFile+=folders.get(indexFolder)+"/";
+                    
                     File[] listOfFiles = folder.listFiles();
                     System.out.println("El dispositivo " + folders.get(indexFolder) + " cuenta con las siguientes versiones de configuración: ");
                     for (int i = 0; i < listOfFiles.length; i++) {
@@ -126,7 +124,15 @@ public class App {
                     }
                     System.out.println("¿Cuál desea exportar a PDF?");
                     indexFile = scanner.nextInt();
+                    pathFile+=listOfFiles[indexFile].getName();
+                    
                     System.out.println("Seleccionaste el archivo " + listOfFiles[indexFile].getName());
+                    
+                    try {
+                        fileManager.createPDF(pathFile);
+                    } catch (FileNotFoundException ex) {
+                        System.out.println("Error de PDF");
+                    }
                     
                     break;
                 default:
@@ -134,6 +140,5 @@ public class App {
                     break;
             }
         } while (option != 0);
-  */
     }
 }

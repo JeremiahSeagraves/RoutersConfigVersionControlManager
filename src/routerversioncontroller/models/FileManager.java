@@ -194,10 +194,31 @@ public class FileManager {
     }
     
     public void createPDF(String nameFile) throws FileNotFoundException{
-        PdfWriter writer = new PdfWriter(nameFile);
+        String name[] = nameFile.split(".txt");
+        
+        PdfWriter writer = new PdfWriter(name[0]+".pdf");
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
-        document.add(new Paragraph("Hello World!"));
-        document.close();
+        FileReader fileReader1 = null;
+        
+        try { 
+            fileReader1 = new FileReader(nameFile);
+            BufferedReader buffer1 = new BufferedReader(fileReader1);
+            String line1 = buffer1.readLine();
+            document.add(new Paragraph("REPORTE DE CONFIGURACIÓN"));
+            document.add(new Paragraph(" "));
+            while (line1 != null) {
+                document.add(new Paragraph(line1));
+                line1 = buffer1.readLine();
+            }  
+            
+            fileReader1.close();
+            document.close();
+            
+        } catch (FileNotFoundException ex) {
+            System.out.println("No se encontro el archivo para comparar");
+        } catch (IOException ex) {
+            System.out.println("Error de lectura");
+        } 
     }
 }
