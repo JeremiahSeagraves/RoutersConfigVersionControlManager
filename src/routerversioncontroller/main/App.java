@@ -29,6 +29,7 @@ public class App {
         ArrayList<Device> topologyDevices = ipFinder.getTopologyDevices();
         
         VersionController versionController = new VersionController(topologyDevices);
+        versionController.initializeFiles();
         FileManager fileManager = new FileManager();
 /*  
         for (Device aTopologyDevice : topologyDevices) {
@@ -99,8 +100,7 @@ public class App {
                     break;
                 case 2:
                     System.out.println("Selecciono la opción 2");
-                    fileManager.createFolders(topologyDevices);
-                    //versionController.initializeFiles();
+                    versionController.updateConfigurationFiles();
                     break;
                 case 3:
                     folders = fileManager.getNameFolders(topologyDevices);

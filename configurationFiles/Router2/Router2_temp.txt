@@ -1,0 +1,6 @@
+Using 1320 out of 245752 bytes
+!
+! Last configuration change at 03:43:35 UTC Sat Jan 1 2000
+!
+version 15.1
+service timestamps debug datetime msec

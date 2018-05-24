@@ -38,7 +38,7 @@ public class VersionController {
         for (int i = 0; i < devices.size(); i++) {
 
             if (!fileManager.containsFiles(devices.get(i).getName())) {
-                if (devices.get(i).getName().contains(ROUTER)) {
+                if (devices.get(i).getName().contains(ROUTER)) { 
                     initializeRouterFiles(devices.get(i));
                 } else {
                     initializeFile(devices.get(i).getIpAddress(), devices.get(i).getName());
@@ -50,8 +50,9 @@ public class VersionController {
     }
 
     private void initializeFile(String ip, String name) {
+        System.out.println("Dispositivo :" + name);
         File readFile = telnetClient.getConfigurationFile(ip, name);
-
+        
         if (readFile == null) {
             System.out.println("No se pudo obtener el archivo de configuracion "
                     + "del dispositivo " + name + " - " + ip);
@@ -101,6 +102,7 @@ public class VersionController {
     }
 
     private void updateConfigurationFile(String ip, String name) {
+        System.out.println("Dispositivo :" + name);
         File readFile = telnetClient.getConfigurationFile(ip, name);
 
         if (readFile == null) {
