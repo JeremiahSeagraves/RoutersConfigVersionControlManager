@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class IpFinder {
 
@@ -114,11 +116,9 @@ public class IpFinder {
         String ipEnd = ipParts[3];
         int networkBeginning = Integer.parseInt(ipEnd);
         for (int i = networkBeginning; i < 256; i++) {
-            System.out.println(i);
             try {
                 System.out.println("Ping a: "+ipBase+i);
                 p = Runtime.getRuntime().exec("ping " + ipBase + i);
-                p.destroy();
             } catch (IOException e) {
                 e.printStackTrace(System.out);
             }
