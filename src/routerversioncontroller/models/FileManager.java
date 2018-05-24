@@ -52,15 +52,15 @@ public class FileManager {
                 SUFFIX_CURRENT_FILE + FILE_EXTENSION;
         File newFile = new File(currentFileName);
         file.renameTo(newFile);
-        System.out.println("Creado el archivo " + file.getName());
+        System.out.println("Creado el archivo " + file.getAbsolutePath());
     }
 
     private void createVersionedConfigurationFile(File file, String nameDirectory, int versionNumber) {
         String newName = ROOT_DIRECTORY + nameDirectory + SLASH + nameDirectory + SUFFIX_VERSION_FILE + 
-                versionNumber + FILE_EXTENSION;
+                (versionNumber-1) + FILE_EXTENSION;
         File newFile = new File(newName);
         file.renameTo(newFile);
-        System.out.println("Creado el archivo " + file.getName());
+        System.out.println("Creado el archivo " + file.getAbsolutePath());
     }
 
     public void writeConfigurationFile(File file, String text) {
@@ -172,6 +172,9 @@ public class FileManager {
             }  
             
             fileReader1.close();
+            fileReader2.close();
+            buffer1.close();
+            buffer2.close();
             
         } catch (FileNotFoundException ex) {
             System.out.println("No se encontro el archivo para comparar");
