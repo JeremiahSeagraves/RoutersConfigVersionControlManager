@@ -32,9 +32,9 @@ public class FileManager {
 
         int numFiles = files.length;
 
-        if (numFiles == 0) {
+        if (numFiles == 1) {
             createCurrentConfigurationFile(readFile, nameDirectory);
-        } else if (numFiles > 0) {
+        } else if (numFiles > 1) {
 
             //Se busca el ultimo archivo de configuración guardado
             File lastFile = getlastConfigurationFile(files);
@@ -52,7 +52,7 @@ public class FileManager {
                 SUFFIX_CURRENT_FILE + FILE_EXTENSION;
         File newFile = new File(currentFileName);
         file.renameTo(newFile);
-        System.out.println("Creado el archivo " + file.getAbsolutePath());
+        System.out.println("Creado el archivo " + file.getName());
     }
 
     private void createVersionedConfigurationFile(File file, String nameDirectory, int versionNumber) {
@@ -60,11 +60,14 @@ public class FileManager {
                 versionNumber + FILE_EXTENSION;
         File newFile = new File(newName);
         file.renameTo(newFile);
-        System.out.println("Creado el archivo " + file.getAbsolutePath());
+        System.out.println("Creado el archivo " + file.getName());
     }
 
     public void writeConfigurationFile(File file, String text) {
 
+        BufferedWriter bw = null;
+        FileWriter writer = null; 
+                    
         try {
 
             if (!file.exists()) {
@@ -72,15 +75,27 @@ public class FileManager {
                 System.out.println("Creado el archivo " + file.getAbsolutePath());
             }
 
-            BufferedWriter bw;
-            FileWriter writer = new FileWriter(
+        
+            writer = new FileWriter(
                     file, true);
             bw = new BufferedWriter(writer);
             bw.write(text);
-            writer.close();
-            bw.close();
+            bw.newLine();
+            bw.flush();
+           // bw.close();
         } catch (IOException ex) {
             ex.printStackTrace(System.out);
+        }finally{
+            try{
+               if(bw != null){
+                   bw.close();
+               }
+               if(writer != null){
+                   writer.close();
+               }
+            }catch(IOException ex){
+                 ex.printStackTrace(System.out);
+            }
         }
     }
 

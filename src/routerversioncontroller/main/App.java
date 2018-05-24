@@ -47,6 +47,6 @@ public class App {
         
         VersionController versionController = new VersionController(topologyDevices);
         versionController.initializeFiles();
-        
+        versionController.updateConfigurationFiles();
     }
 }
