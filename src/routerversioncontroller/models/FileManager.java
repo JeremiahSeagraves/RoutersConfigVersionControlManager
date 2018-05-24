@@ -119,9 +119,9 @@ public class FileManager {
             File file = new File(ROOT_DIRECTORY + devices.get(i).getName());
             if (!file.exists()) {
                 file.mkdirs();
-                System.out.println("Creado la carpeta" + file.getAbsolutePath());
+                //System.out.println("Creado la carpeta" + file.getAbsolutePath());
             } else {
-                System.out.println("La carpeta " + file.getAbsolutePath() + " ya existe");
+               // System.out.println("La carpeta " + file.getAbsolutePath() + " ya existe");
             }
         }
         
@@ -205,8 +205,8 @@ public class FileManager {
     public ArrayList<String> getNameFolders(ArrayList<Device> devices) {
         ArrayList<String> folders = new ArrayList<>();
         for (int i = 0; i < devices.size(); i++) {
-            System.out.println("GET NAME FOLDERS");
-            System.out.println(devices.get(i).getName());
+            //System.out.println("GET NAME FOLDERS");
+            //System.out.println(devices.get(i).getName());
             if(!folders.contains(devices.get(i).getName())){
                 folders.add(devices.get(i).getName());
             }
